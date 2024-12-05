@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.css": "/visualize-tweets/static/css/main.31d6cfe0.css",
+    "main.js": "/visualize-tweets/static/js/main.e6798b28.js",
+    "index.html": "/visualize-tweets/index.html",
+    "main.e6798b28.js.map": "/visualize-tweets/static/js/main.e6798b28.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.31d6cfe0.css",
+    "static/js/main.e6798b28.js"
+  ]
+}
