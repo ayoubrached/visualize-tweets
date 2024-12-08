@@ -28,7 +28,7 @@ class TweetVisualization extends Component {
     const { data } = this.props;
     const { colorMode } = this.state;
   
-    const svgWidth = 1000;
+    const svgWidth = 1200;
     const svgHeight = 600;
   
     const svg = d3
@@ -48,59 +48,58 @@ class TweetVisualization extends Component {
     const colorScale =
       colorMode === 'sentiment' ? sentimentColorScale : subjectivityColorScale;
   
-    const monthScaleY = d3
-      .scalePoint()
-      .domain(['March', 'April', 'May'])
-      .range([100, svgHeight - 100]);
+    const nodes = svg.selectAll('circle');
+    nodes.attr('fill', (d) =>
+      colorScale(colorMode === 'sentiment' ? d.Sentiment : d.Subjectivity)
+    );
   
-    const simulation = d3
-      .forceSimulation(data)
-      .force('x', d3.forceX(svgWidth / 2).strength(0.01))
-      .force(
-        'y',
-        d3.forceY((d) => monthScaleY(d.Month) || svgHeight / 2).strength(0.1)
-      )
-      .force('collide', d3.forceCollide(12))
-      .on('tick', ticked);
-
-    svg
-      .selectAll('.month-label')
-      .data(['March', 'April', 'May'])
-      .enter()
-      .append('text')
-      .attr('class', 'month-label')
-      .attr('x', svgWidth - 900)
-      .attr('y', (d) => monthScaleY(d))
-      .attr('dy', '-1.5em')
-      .attr('text-anchor', 'middle')
-      .attr('font-weight', 'bold')
-      .text((d) => d);
-      
-    const nodes = svg.selectAll('circle').data(data);
+    if (nodes.empty()) {
+      const monthScaleY = d3
+        .scalePoint()
+        .domain(['March', 'April', 'May'])
+        .range([100, svgHeight - 100]);
   
-    nodes
-      .attr('fill', (d) =>
-        colorScale(colorMode === 'sentiment' ? d.Sentiment : d.Subjectivity)
-      );
+      const simulation = d3
+        .forceSimulation(data)
+        .force('x', d3.forceX(svgWidth - 100).strength(0.01))
+        .force(
+          'y',
+          d3.forceY((d) => monthScaleY(d.Month) || svgHeight / 2).strength(0.2)
+        )
+        .force('collide', d3.forceCollide(12))
+        .on('tick', ticked);
   
-    nodes
-      .enter()
-      .append('circle')
-      .attr('r', 7)
-      .attr('fill', (d) =>
-        colorScale(colorMode === 'sentiment' ? d.Sentiment : d.Subjectivity)
-      )
-      .attr('stroke', 'none')
-      .attr('data-id', (d) => d.idx)
-      .on('click', (event, d) => this.handleTweetClick(d));
-  
-    nodes.exit().remove();
-  
-    function ticked() {
       svg
+        .selectAll('.month-label')
+        .data(['March', 'April', 'May'])
+        .enter()
+        .append('text')
+        .attr('class', 'month-label')
+        .attr('x', svgWidth - 1000)
+        .attr('y', (d) => monthScaleY(d))
+        .attr('dy', '-1.5em')
+        .attr('text-anchor', 'middle')
+        .attr('font-weight', 'bold')
+        .text((d) => d);
+  
+      const nodeEnter = svg
         .selectAll('circle')
-        .attr('cx', (d) => d.x)
-        .attr('cy', (d) => d.y);
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr('r', 7)
+        .attr('fill', (d) =>
+          colorScale(colorMode === 'sentiment' ? d.Sentiment : d.Subjectivity)
+        )
+        .attr('stroke', 'none')
+        .attr('data-id', (d) => d.idx)
+        .on('click', (event, d) => this.handleTweetClick(d));
+  
+      function ticked() {
+        nodeEnter
+          .attr('cx', (d) => d.x)
+          .attr('cy', (d) => d.y);
+      }
     }
   
     svg.select('defs').remove();
@@ -156,7 +155,6 @@ class TweetVisualization extends Component {
       .attr('height', legendHeight)
       .style('fill', 'url(#legend-gradient)');
   
-    // Add labels for the legend
     svg
       .append('text')
       .attr('class', 'legend-label')
@@ -174,7 +172,7 @@ class TweetVisualization extends Component {
       .attr('text-anchor', 'end')
       .attr('font-size', '12px')
       .text(colorMode === 'sentiment' ? 'Negative' : 'Objective');
-  };     
+  };      
 
   handleTweetClick = (tweet) => {
     const selectedCircle = d3.select(`[data-id="${tweet.idx}"]`);

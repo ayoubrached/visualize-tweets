@@ -17,15 +17,15 @@ class FileUpload extends Component {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const json = JSON.parse(e.target.result); // Parse the JSON file
-          this.setState({ jsonData: json }); // Store parsed JSON
-          this.props.set_data(json); // Pass the data to the parent
+          const json = JSON.parse(e.target.result);
+          this.setState({ jsonData: json });
+          this.props.set_data(json);
         } catch (error) {
           console.error('Invalid JSON file', error);
           alert('Invalid JSON file. Please upload a valid JSON file.');
         }
       };
-      reader.readAsText(file); // Read the file as text
+      reader.readAsText(file);
     }
   };
 
@@ -36,7 +36,7 @@ class FileUpload extends Component {
         <form onSubmit={this.handleFileSubmit}>
           <input
             type="file"
-            accept=".json" // Accept only JSON files
+            accept=".json"
             onChange={(event) => this.setState({ file: event.target.files[0] })}
           />
           <button type="submit">Upload</button>

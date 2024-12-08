@@ -6,12 +6,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [], // Store the uploaded and sliced data
+      data: [],
     };
   }
 
   setData = (data) => {
-    // Slice the data to the first 300 entries as per the professor's instructions
     this.setState({ data: data.slice(0, 300) });
   };
 
